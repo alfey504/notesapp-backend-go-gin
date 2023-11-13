@@ -13,6 +13,6 @@ func UserRoutes(r *gin.Engine) {
 	userRoutes.POST("/login", controllers.LoginUser())
 
 	authUserRoutes := r.Group("/user/auth")
-	authUserRoutes.Use(middleware.Authorization())
+	authUserRoutes.Use(middleware.AuthorizationWithTokenParsing())
 	authUserRoutes.GET("/", controllers.VerifyUser())
 }

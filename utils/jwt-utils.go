@@ -35,6 +35,10 @@ func GenerateJwtToken(username string) (string, error) {
 }
 
 func ExtractTokenFromRequest(c *gin.Context) (string, error) {
+	if token, err := c.Cookie(config.USER_TOKEN); err == nil {
+		return token, nil
+	}
+
 	if token := c.Query("token"); token != "" {
 		return token, nil
 	}
@@ -71,10 +75,12 @@ func ValidateToken(c *gin.Context) error {
 }
 
 func ValidateTokenAndGetUsername(c *gin.Context) (string, error) {
+
 	tokenString, err := ExtractTokenFromRequest(c)
 	if err != nil {
 		return "", err
 	}
+	println("tokenString : ", tokenString)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

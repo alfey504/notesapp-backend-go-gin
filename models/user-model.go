@@ -3,19 +3,21 @@ package models
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var hashCost = 14
 
 type User struct {
-	UserId   Oid    `json:"_id,omitempty"`
 	Username string `json:"username,omitempty" validate:"required"`
 	Password string `json:"password,omitempty" validate:"required"`
 }
 
-type Oid struct {
-	Id string `json:"$oid,omitempty"`
+type UserWithId struct {
+	Id       *primitive.ObjectID `json:"_id,omitempty"`
+	Username string              `json:"username,omitempty" validate:"required"`
+	Password string              `json:"password,omitempty" validate:"required"`
 }
 
 var validate = validator.New()

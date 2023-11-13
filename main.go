@@ -18,6 +18,7 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.CorsMiddleware())
 	routes.UserRoutes(r)
+	routes.NotesRoutes(r)
 
 	r.Run()
 	return
