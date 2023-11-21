@@ -17,4 +17,5 @@ func NotesRoutes(r *gin.Engine) {
 	notesRoutes.GET("/favorites", controllers.GetUsersFavoriteNotes())
 	notesRoutes.PUT("/favorite", controllers.UpdateNotesFavorite())
 	notesRoutes.POST("/update", controllers.UpdateNote())
+	notesRoutes.GET("/id", controllers.GetNoteById())
 }

@@ -56,7 +56,7 @@ func SetNoteFavorite(ctx context.Context, noteId string, favorite bool) error {
 		return err
 	}
 
-	update := bson.D{{"$set", bson.D{{"favorite", favorite}}}}
+	update := bson.M{"$set": bson.M{"favorite": favorite}}
 	result, err := notesCollection.UpdateByID(ctx, id, update)
 	println(result)
 	if err != nil {
@@ -74,4 +74,21 @@ func UpdateNote(ctx context.Context, note models.NoteWithId) error {
 		return err
 	}
 	return nil
+}
+
+func GetNoteById(ctx context.Context, id string) (models.NoteWithId, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return models.NoteWithId{}, err
+	}
+	filter := bson.M{"_id": objectId}
+	result := notesCollection.FindOne(ctx, filter)
+	if result.Err() != nil {
+		return models.NoteWithId{}, result.Err()
+	}
+	var note models.NoteWithId
+	if err := result.Decode(&note); err != nil {
+		return models.NoteWithId{}, err
+	}
+	return note, nil
 }

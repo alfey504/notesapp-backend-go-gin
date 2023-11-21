@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var notesCollection = config.GetCollection(config.DB, "notes")
@@ -320,5 +321,54 @@ func UpdateNote() gin.HandlerFunc {
 				"data": "success",
 			},
 		})
+	}
+}
+
+func GetNoteById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer cancel()
+
+		id := c.Query("id")
+		if id == "" {
+			c.JSON(http.StatusBadRequest, responses.Response{
+				Status:  http.StatusBadRequest,
+				Message: "missing query Id",
+				Data: map[string]interface{}{
+					"data": "Please provide id as a query",
+				},
+			})
+			return
+		}
+
+		note, err := services.GetNoteById(ctx, id)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusBadRequest, responses.Response{
+				Status:  http.StatusBadRequest,
+				Message: "Unable to find document with given Id",
+				Data: map[string]interface{}{
+					"data": err.Error(),
+				},
+			})
+			return
+		} else if err != nil {
+			c.JSON(http.StatusBadRequest, responses.Response{
+				Status:  http.StatusBadRequest,
+				Message: "Unable to find document with given Id",
+				Data: map[string]interface{}{
+					"data": err.Error(),
+				},
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, responses.Response{
+			Status:  http.StatusOK,
+			Message: "Successfully fetched note",
+			Data: map[string]interface{}{
+				"data": note,
+			},
+		})
+		return
 	}
 }

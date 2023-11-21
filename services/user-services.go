@@ -11,8 +11,7 @@ import (
 var userCollection = config.GetCollection(config.DB, "users")
 
 func UserExists(ctx context.Context, username string) (bool, error) {
-
-	filter := bson.D{{"username", username}}
+	filter := bson.M{"username": username}
 	user := userCollection.FindOne(ctx, filter)
 	if user.Err() == mongo.ErrNoDocuments {
 		println(user.Err().Error())
